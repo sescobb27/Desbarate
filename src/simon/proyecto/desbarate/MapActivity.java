@@ -1,25 +1,41 @@
 package simon.proyecto.desbarate;
 
 import simon.proyecto.desbarate.detectores.ConnectionDetector;
+import simon.proyecto.desbarate.detectores.GoogleServicesDetector;
+import simon.proyecto.desbarate.services.GoogleLocationService;
+import simon.proyecto.desbarate.services.notifier.NotifierReceiver;
+import simon.proyecto.desbarate.subscriptors.NotifierSubscriptor;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MapActivity extends android.support.v4.app.FragmentActivity
-							implements OnMapClickListener {
+							implements OnMapClickListener, OnMarkerClickListener,
+							NotifierSubscriptor {
 
 	private CameraUpdate camara;
 	private LatLng posicion;
+	private GoogleMap mapa;
+	private MarkerOptions marker;
 	
 	private ConnectionDetector connection;
+	private GoogleServicesDetector service_detector;
+	private boolean manual_location = false;
 	
 //	CONSTANTES
 	private final double LATITUD_INICIAL = 6.235357;
@@ -34,7 +50,7 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 		
 //		Accederemos al mapa llamando al método getMap() del fragmento MapFragment via getSupportFragment
 //		que contenga nuestro mapa
-		GoogleMap mapa = (
+		mapa = (
 					(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)
 				).getMap();
 		mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -49,8 +65,24 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 				"Active los datos o conectate al wifi mas cercano",
 				Toast.LENGTH_LONG
 			).show();
+		} else {
+			detectGoogleServices();
 		}
-		
+		mapa.setOnMapClickListener( this );
+		mapa.setOnMarkerClickListener( this );
+		marker = new MarkerOptions();
+	}
+
+	private void detectGoogleServices() {
+		service_detector = GoogleServicesDetector.getGoogleServicesDetector(this);
+		int result_code = service_detector.isGoogleServicesEnable();
+		if (result_code == GoogleServicesDetector.TRUE) {
+			Intent intent = new Intent(this,GoogleLocationService.class);
+			NotifierReceiver.subscribeToNotifications(this);
+			startService(intent);
+		} else {
+			
+		}
 	}
 
 	@Override
@@ -59,10 +91,43 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 		getMenuInflater().inflate(R.menu.map, menu);
 		return true;
 	}
+	
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch( item.getItemId() ){
+		case R.id.manual_location:
+			if (manual_location) {
+				manual_location = false;
+				item.setChecked(false);
+			} else {
+				manual_location = true;
+				item.setChecked(true);
+			}
+			return true;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
 
 	@Override
 	public void onMapClick(LatLng point) {
-		// TODO
+		if( manual_location ) {
+			mapa.clear();
+			marker.position(point).title("Help/Ayuda");
+			mapa.addMarker(marker);
+		}
 	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+		return true;
+	}
+
+	@Override
+	public void receiveLocationUpdate(Location location) {
+		mapa.clear();
+		marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+		mapa.addMarker(marker);
+	}
+	
 
 }

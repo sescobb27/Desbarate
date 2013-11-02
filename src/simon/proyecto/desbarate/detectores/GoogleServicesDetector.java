@@ -3,31 +3,31 @@ package simon.proyecto.desbarate.detectores;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import android.app.Activity;
+import android.content.Context;
 
 public class GoogleServicesDetector {
 	
 	private static GoogleServicesDetector services_detector;
-	private static Activity activity;
+	private static Context context;
 	
 //	CONSTANTS
 	public static final int TRUE = 1;
 //	END CONSTANTS
 	
-	private GoogleServicesDetector(Activity new_activity) {
-		activity = new_activity;
+	private GoogleServicesDetector(Context new_context) {
+		context = new_context;
 	}
 	
-	public static GoogleServicesDetector getGoogleServicesDetector(Activity new_activity) {
+	public static GoogleServicesDetector getGoogleServicesDetector(Context new_context) {
 		if (services_detector ==  null)
-			services_detector = new GoogleServicesDetector(new_activity);
+			services_detector = new GoogleServicesDetector(new_context);
 		else
-			activity = new_activity;
+			context = new_context;
 		return services_detector;
 	}
 	
 	public int isGoogleServicesEnable() {
-		int result_code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+		int result_code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
 		if ( result_code == ConnectionResult.SUCCESS ) {
 			return TRUE;
 		}

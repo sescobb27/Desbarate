@@ -42,6 +42,9 @@
         <activity
             android:name="simon.proyecto.desbarate.MapActivity">
         </activity>
+        <service
+            android:name="simon.proyecto.desbarate.services.GoogleLocationService"
+            android:exported="false"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyC8kEXrLRl6xB5SQnPajstWRe4Xp_Vf2uk" />
