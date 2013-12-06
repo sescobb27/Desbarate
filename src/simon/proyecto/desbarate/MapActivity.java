@@ -16,7 +16,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -24,6 +23,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+/**
+ * @author simon
+ *
+ */
 public class MapActivity extends android.support.v4.app.FragmentActivity
 							implements OnMapClickListener, OnMarkerClickListener,
 							NotifierSubscriptor {
@@ -73,6 +76,14 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 		marker = new MarkerOptions();
 	}
 
+	/**
+	 * @description
+	 * detects if the smart phone has support for google play services,
+	 * if yes, then this class subscribes it self to receive notifications based
+	 * on Google play services location library, else @TODO subscribe to
+	 * receive notifications based on GPS, Network or any hardware device
+	 * with location based support
+	 */
 	private void detectGoogleServices() {
 		service_detector = GoogleServicesDetector.getGoogleServicesDetector(this);
 		int result_code = service_detector.isGoogleServicesEnable();
@@ -81,7 +92,7 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 			NotifierReceiver.subscribeToNotifications(this);
 			startService(intent);
 		} else {
-			
+			//@TODO
 		}
 	}
 
@@ -93,6 +104,16 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 	}
 	
 	@Override
+	/**
+	 * @param int featureId
+	 * @param MenuItem item
+	 * @return boolean true if manual_location was clicked
+	 * 
+	 * @description
+	 * if manual_location was clicked the user have to provide his location
+	 * manually, else the device must have to update the user location
+	 * automatically 
+	 */
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch( item.getItemId() ){
 		case R.id.manual_location:
@@ -109,6 +130,12 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 	}
 
 	@Override
+	/**
+	 * @param LatLng point
+	 * When user clicks the map, and the boolean flag manual_location is true,
+	 * (the user checks in the menu for set the location manually) this method
+	 * catch the point where the user clicks and puts a marker there
+	 */
 	public void onMapClick(LatLng point) {
 		if( manual_location ) {
 			mapa.clear();
@@ -118,11 +145,23 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 	}
 
 	@Override
+	/**
+	 * @param Marker marker
+	 * @TODO if the user clicks the marker, a pop up window should be shown
+	 * and prompt the user to delete the marker
+	 */
 	public boolean onMarkerClick(Marker marker) {
 		return true;
 	}
 
 	@Override
+	/**
+	 * @param Location location
+	 * @description
+	 * Method implemented to receive location updates from Google play services
+	 * but it should work when receiving notifications from location based on
+	 * hardware (GPS, Network, etc)
+	 */
 	public void receiveLocationUpdate(Location location) {
 		mapa.clear();
 		marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
