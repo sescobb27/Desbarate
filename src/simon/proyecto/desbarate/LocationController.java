@@ -3,6 +3,7 @@ package simon.proyecto.desbarate;
 import java.util.List;
 
 import simon.proyecto.desbarate.services.LocationConstants;
+import simon.proyecto.desbarate.subscriptors.LocationSuscriptor;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -29,29 +30,70 @@ public class LocationController implements LocationListener {
 	private final int _5_MIN = 500000;
 //	END CONSTANTS
 	
+	/**
+	 * @param context
+	 * Description
+	 * based on the context of the application we need to create a standard
+	 * location controller to provide a very high location accuracy based on
+	 * GPS and Network providers
+	 */
 	public LocationController(Context context) {
-		location_manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		location_manager = (LocationManager)
+				context.getSystemService(Context.LOCATION_SERVICE);
 		location_criteria = new Criteria();
 		location_criteria.setAccuracy(Criteria.ACCURACY_HIGH);
 		service_exception = new NoLocationServiceEnable();
 	}
 	
+	/**
+	 * @param enable_only
+	 * @return String
+	 * Description
+	 * the name of the best location provider based on if the provider
+	 * must be enable or not
+	 */
+	@SuppressWarnings("javadoc")
 	public String getBestLocationByCriteria(boolean enable_only) {
 		return location_manager.getBestProvider(location_criteria, enable_only);
 	}
 	
+	/**
+	 * @param enable_only
+	 * @return List<String> names
+	 * Description
+	 * return a list of the best providers on the device, where must be enable
+	 * or not, depends on the @param
+	 */
+	@SuppressWarnings("javadoc")
 	public List<String> getAllBestProvidersByCriteria(boolean enable_only) {
 		return location_manager.getProviders(location_criteria, enable_only);
 	}
 	
+	/**
+	 * @return List<String> all the provider available on the devise
+	 */
 	public List<String> getAllProviders() {
 		return location_manager.getAllProviders();
 	}
 	
+	/**
+	 * @param suscriptor
+	 * Description
+	 * when a class implements LocationSuscriptor, should subscribe with this
+	 * method to get notifications about location updates
+	 */
+	@SuppressWarnings("hiding")
 	public void suscribeToOnLocationChange( LocationSuscriptor suscriptor ) {
 		this.suscriptor = suscriptor;
 	}
 	
+	/**
+	 * @param provider
+	 * @param time
+	 * Description
+	 * set the how much time per update the user will be have, and which provider
+	 * will be use the location manager for handle the location updates
+	 */
 	private void setLocationUpdates(String provider, long time) {
 		location_manager.requestLocationUpdates(
 			provider, time, 0, this);
@@ -65,53 +107,67 @@ public class LocationController implements LocationListener {
 		return location_manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 	
+	/**
+	 * @return LocationProvider GPS
+	 */
 	public LocationProvider getGpsProvider() {
 		return location_manager.getProvider(LocationManager.GPS_PROVIDER);
 	}
 	
+	/**
+	 * @return LocationProvider Network
+	 */
 	public LocationProvider getNetworkProvider() {
 		return location_manager.getProvider(LocationManager.NETWORK_PROVIDER);
 	}
 	
+	/**
+	 * @return Boolean GPS as Provider or Network else Throws
+	 * @throws NoLocationServiceEnable
+	 * first it tries to set GPS as provider because its accuracy, but if it isn't
+	 * enable then tries with the Network provider, else if neither of both are
+	 * enable it throws an exception
+	 */
 	public boolean setGpsOrNetworLocation() throws NoLocationServiceEnable {
 		if ( setGpsAsProvider() || setNetworAsProvider()  )
 			return true;
-//		if (isGpsEnable()) {
-//			setLocationUpdates(LocationManager.GPS_PROVIDER,
-//					LocationConstants.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-//			return getGpsProvider();
-//		} else if (isWifiLocationEnable()) {
-//			setLocationUpdates(LocationManager.NETWORK_PROVIDER,
-//					LocationConstants.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-//			return getNetworkProvider();
-//		} else
 		throw service_exception;
 	}
 	
+	/**
+	 * @return Boolean True if it could set GPS as provider, else False
+	 */
 	public boolean setGpsAsProvider() {
 		if (isGpsEnable()) {
 			setLocationUpdates(LocationManager.GPS_PROVIDER,
 					LocationConstants.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-//			return getGpsProvider();
 			return true;
 		}
 		return false;
 	}
 	
+	/**
+	 * @return Boolean True if it could set Network as provider, else False
+	 */
 	public boolean setNetworAsProvider() {
 		if (isWifiLocationEnable()) {
 			setLocationUpdates(LocationManager.NETWORK_PROVIDER,
 					LocationConstants.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-//			return getNetworkProvider();
 			return true;
 		}
 		return false;
 	}
 	
+	/**
+	 * @param provider
+	 */
 	public void updateUpdateRate(String provider) {
 		setLocationUpdates(provider, _5_MIN);
 	}
 	
+	/**
+	 * 
+	 */
 	public void removeUpdates() {
 		location_manager.removeUpdates(this);
 	}
