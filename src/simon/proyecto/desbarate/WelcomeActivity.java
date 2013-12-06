@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 
+/**
+ * @author simon
+ *
+ */
 public class WelcomeActivity extends Activity {
 
 	@Override
