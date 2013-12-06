@@ -1,19 +1,15 @@
 package simon.proyecto.desbarate.services;
 
 import simon.proyecto.desbarate.detectores.GoogleServicesDetector;
-import simon.proyecto.desbarate.dialogs.ErrorDialogFragment;
 import simon.proyecto.desbarate.services.notifier.Notifier;
-import android.app.Dialog;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
