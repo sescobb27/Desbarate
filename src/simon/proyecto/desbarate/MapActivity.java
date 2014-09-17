@@ -5,6 +5,13 @@ import simon.proyecto.desbarate.detectores.GoogleServicesDetector;
 import simon.proyecto.desbarate.services.GoogleLocationService;
 import simon.proyecto.desbarate.services.notifier.NotifierReceiver;
 import simon.proyecto.desbarate.subscriptors.NotifierSubscriptor;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,18 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.content.Intent;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
-
 /**
  * @author simon
  *
  */
-public class MapActivity extends android.support.v4.app.FragmentActivity
+public class MapActivity extends FragmentActivity
 							implements OnMapClickListener, OnMarkerClickListener,
 							NotifierSubscriptor {
 
@@ -53,9 +53,7 @@ public class MapActivity extends android.support.v4.app.FragmentActivity
 		
 //		Accederemos al mapa llamando al método getMap() del fragmento MapFragment via getSupportFragment
 //		que contenga nuestro mapa
-		mapa = (
-					(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)
-				).getMap();
+		mapa = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 		mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		posicion = new LatLng(LATITUD_INICIAL, LONGITUD_INICIAL);
 		camara = CameraUpdateFactory.newLatLngZoom(posicion, ZOOM);

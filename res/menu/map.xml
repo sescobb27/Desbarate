@@ -1,4 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/manual_location" android:menuCategory="container" android:title="Ubicación Manual" android:checked="false" android:enabled="true" android:visible="true" android:checkable="true"></item>
+
+    <item
+        android:id="@+id/manual_location"
+        android:checkable="true"
+        android:checked="false"
+        android:enabled="true"
+        android:menuCategory="container"
+        android:title="Ubicación Manual"
+        android:visible="true">
+    </item>
 
 </menu>
